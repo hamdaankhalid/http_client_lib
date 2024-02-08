@@ -2,6 +2,17 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+# debugging client logger
+@app.before_request
+def log_request_info():
+    app.logger.info('Request: \n Method %s \n BASE URL %s \n HEADERS %s \n DATA %s \n ARGS %s',
+                    request.method,
+                    request.base_url,
+                    request.headers,
+                    request.get_data(),
+                    request.args)
+
+
 # Dummy data (in-memory database)
 tasks = [
     {"id": 1, "title": "Task 1", "description": "Description 1", "done": False},
