@@ -1,13 +1,17 @@
 #ifndef HTTP_CLIENT
 #define HTTP_CLIENT
 
+#include <iostream>
+#include <netdb.h>
 #include <string>
+#include <unistd.h>
 #include <vector>
 
 const int HTTP_PORT = 80;
 const int HTTPS_PORT = 443;
 
 const char CRLF[] = "\r\n";
+
 const char DELIMITTER = ' ';
 
 enum HTTP_METHOD {
@@ -29,8 +33,7 @@ private:
   std::string m_value;
 };
 
-class HttpResponse {
-};
+class HttpResponse {};
 
 /*
 INTERNAL:
@@ -45,7 +48,7 @@ obtained while sending the content.
 class HTTPMessage {
 public:
   HTTPMessage(HTTP_METHOD method, std::string route, std::string version,
-			std::vector<unsigned char> body, std::vector<HttpHeader> headers);
+              std::vector<unsigned char> body, std::vector<HttpHeader> headers);
 
   std::unique_ptr<std::vector<unsigned char>> GetBytes();
 
@@ -55,6 +58,27 @@ private:
   std::string m_httpVersion;
   std::vector<unsigned char> m_body;
   std::vector<HttpHeader> m_headers;
+};
+
+// Custom deleter so we can use socket with unique_ptr
+class SocketDeleter {
+public:
+  void operator()(int *socket) const {
+    if (socket != nullptr && *socket >= 0) {
+      close(*socket);
+    }
+    delete socket; // Don't forget to release the memory
+  }
+};
+
+// AddrinfoDeleter so we can use struct addrinfo wrapped with unique_ptr
+class AddrinfoDeleter {
+public:
+  void operator()(addrinfo *p) const {
+    if (p != nullptr) {
+      freeaddrinfo(p);
+    }
+  }
 };
 
 // PUBLIC EXPORT
@@ -82,7 +106,7 @@ public:
    The optional blocksize parameter sets the buffer size in bytes for sending a
    file-like message body.
    */
-  
+
   HTTPConnection(std::string host, int port, int blockSize);
 
   /*
@@ -120,14 +144,18 @@ public:
   all encoding is handled by the calling code. If it is True, the body will be
   chunk-encoded.
   */
-  void Request(HTTP_METHOD method, const std::string &url,
-               const std::vector<unsigned char>& body, const std::vector<HttpHeader> &headers);
+  bool Request(HTTP_METHOD method, const std::string &url,
+               const std::vector<unsigned char> &body,
+               const std::vector<HttpHeader> &headers);
 
 private:
   std::string host;
   int port;
   int blockSize;
-  int m_socketSession;
+  std::unique_ptr<int, SocketDeleter> m_socketSession;
+  std::unique_ptr<struct addrinfo, AddrinfoDeleter> m_resolvedAddr;
+
+  bool establishOrReuseTcpSession();
 };
 
 #endif
