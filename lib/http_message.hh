@@ -15,7 +15,7 @@ enum HTTP_METHOD {
   DELETE = 3,
 };
 
-const char* HTTP_METHOD_STR[] = {"GET", "POST", "PUT", "PUT", "DELETE"};
+extern const char* HTTP_METHOD_STR[];
 
 class HttpHeader {
 public:
@@ -27,15 +27,12 @@ private:
   std::string m_value;
 };
 
-// TODO: Need a way to have it parsed into, need getters
-class HttpResponse {};
-
-class HTTPMessage {
+class HTTPRequest {
 public:
-  HTTPMessage(HTTP_METHOD method, std::string route, std::string version,
+  HTTPRequest(HTTP_METHOD method, std::string route, std::string version,
               std::vector<unsigned char> body, std::vector<HttpHeader> headers);
 
-  std::unique_ptr<std::vector<unsigned char> > GetBytes();
+  std::vector<unsigned char> GetBytes();
 
 private:
   HTTP_METHOD m_method;
@@ -43,6 +40,31 @@ private:
   std::string m_httpVersion;
   std::vector<unsigned char> m_body;
   std::vector<HttpHeader> m_headers;
+};
+
+/*
+ * Response = HTTP-version SP status-code SP [ reason-phrase ] CRLF
+			   *( field-line CRLF )
+			   CRLF
+			   [ message-body ]
+ * */
+class HttpResponse {
+	public:
+		static std::unique_ptr<HttpResponse> FromRawResp(std::vector<unsigned char>& rawResp);
+
+		const std::string& GetHTTPVersion() const;
+		int GetStatusCode() const;
+		const std::string& GetReasonPhrase() const;
+		const std::vector<HttpHeader>& GetHeaders() const;
+		const std::vector<unsigned char>& GetRawBody() const;
+
+	private:
+
+		std::string m_httpVersion;
+		int m_status;
+		std::string m_reason;
+		std::vector<HttpHeader> m_headers;
+		std::vector<unsigned char> m_body;
 };
 
 #endif

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <vector>
 
+
 void printVector(const std::vector<unsigned char> &vec, ssize_t limit) {
   std::cout << std::string(vec.begin(), vec.begin() + limit) << std::endl;
 }
@@ -32,13 +33,13 @@ bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
     return false;
   }
 
-  HTTPMessage request(method, url, "HTTP/1.1", body, headers);
-  std::unique_ptr<std::vector<unsigned char>> data = request.GetBytes();
+  HTTPRequest request(method, url, "HTTP/1.1", body, headers);
+  std::vector<unsigned char> data = request.GetBytes();
 
   ssize_t totalSent = 0;
-  while (totalSent < data->size()) {
-    ssize_t sent = send(*m_socketSession.get(), data->data() + totalSent,
-                        data->size() - totalSent, 0);
+  while (totalSent < data.size()) {
+    ssize_t sent = send(*m_socketSession.get(), data.data() + totalSent,
+                        data.size() - totalSent, 0);
     if (sent < 0) {
       std::cout << "Couldn't send!" << std::endl;
       return false;
