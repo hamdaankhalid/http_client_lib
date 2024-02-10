@@ -2,6 +2,7 @@
 #include <string>
 
 #include <http_client.hh>
+#include <http_message.hh>
 
 int main() {
   try {

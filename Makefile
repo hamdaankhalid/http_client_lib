@@ -10,7 +10,7 @@ BIN_DIR := ./bin
 EXAMPLES_DIR := ./testing
 
 # List your source files for the library
-LIB_SRCS := $(wildcard $(SRC_DIR)/*.c)
+LIB_SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 LIB_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(LIB_SRCS))
 
 # Define the library target
@@ -27,7 +27,7 @@ all: $(LIB_TARGET) $(EXAMPLE_BINS)
 # Rule to build library objects
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -fPIC -c $< -o $@
 
 # Rule to build the library
 $(LIB_TARGET): $(LIB_OBJS)
