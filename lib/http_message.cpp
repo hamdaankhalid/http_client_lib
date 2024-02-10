@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-const char* HTTP_METHOD_STR[] = {"GET", "POST", "PUT", "PUT", "DELETE"};
+const char *HTTP_METHOD_STR[] = {"GET", "POST", "PUT", "PUT", "DELETE"};
 
 HttpHeader::HttpHeader(std::string key, std::string val)
     : m_key(key), m_value(val) {}
@@ -65,27 +65,30 @@ std::vector<unsigned char> HTTPRequest::GetBytes() {
 
   return data;
 }
-		
-std::unique_ptr<HttpResponse> HttpResponse::FromRawResp(std::vector<unsigned char>& rawResp) {
-	// Parse, create and return unq_ptr
+
+/*
+ * Response = HTTP-version SP status-code SP [ reason-phrase ] CRLF
+                           *( field-line CRLF )
+                           CRLF
+                           [ message-body ]
+ * */
+std::unique_ptr<HttpResponse>
+HttpResponse::FromRawResp(std::vector<unsigned char> &rawResp) {
+  // Parse, create and return unq_ptr
 }
 
-const std::string& HttpResponse::GetHTTPVersion() const {
-	return m_httpVersion;
+const std::string &HttpResponse::GetHTTPVersion() const {
+  return m_httpVersion;
 }
 
-int HttpResponse::GetStatusCode() const {
-	return m_status;
+int HttpResponse::GetStatusCode() const { return m_status; }
+
+const std::string &HttpResponse::GetReasonPhrase() const { return m_reason; }
+
+const std::vector<HttpHeader> &HttpResponse::GetHeaders() const {
+  return m_headers;
 }
 
-const std::string& HttpResponse::GetReasonPhrase() const {
-	return m_reason;
-}
-
-const std::vector<HttpHeader>& HttpResponse::GetHeaders() const {
-	return m_headers;
-}
-
-const std::vector<unsigned char>& HttpResponse::GetRawBody() const {
-	return m_body;
+const std::vector<unsigned char> &HttpResponse::GetRawBody() const {
+  return m_body;
 }

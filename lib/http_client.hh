@@ -45,7 +45,7 @@ public:
                const std::vector<HttpHeader> &headers);
 
   // ---- End of Public Exported Method sections ----
-	
+
   // Delete default constructor
   HTTPConnection() = delete;
   // Delete copy constructor and copy assignment since this class

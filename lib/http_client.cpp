@@ -1,22 +1,18 @@
 #include "http_client.hh"
 #include "http_message.hh"
 
-#include <c++/v1/__nullptr>
 #include <iostream>
 #include <iterator>
 #include <memory>
 #include <netdb.h>
-#include <stdexcept>
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
-
 void printVector(const std::vector<unsigned char> &vec, ssize_t limit) {
   std::cout << std::string(vec.begin(), vec.begin() + limit) << std::endl;
 }
-
 
 /* Connection:
  * A transport layer virtual circuit established between two

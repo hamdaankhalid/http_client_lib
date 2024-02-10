@@ -15,7 +15,7 @@ enum HTTP_METHOD {
   DELETE = 3,
 };
 
-extern const char* HTTP_METHOD_STR[];
+extern const char *HTTP_METHOD_STR[];
 
 class HttpHeader {
 public:
@@ -42,29 +42,24 @@ private:
   std::vector<HttpHeader> m_headers;
 };
 
-/*
- * Response = HTTP-version SP status-code SP [ reason-phrase ] CRLF
-			   *( field-line CRLF )
-			   CRLF
-			   [ message-body ]
- * */
 class HttpResponse {
-	public:
-		static std::unique_ptr<HttpResponse> FromRawResp(std::vector<unsigned char>& rawResp);
+public:
+  static std::unique_ptr<HttpResponse>
+  FromRawResp(std::vector<unsigned char> &rawResp);
 
-		const std::string& GetHTTPVersion() const;
-		int GetStatusCode() const;
-		const std::string& GetReasonPhrase() const;
-		const std::vector<HttpHeader>& GetHeaders() const;
-		const std::vector<unsigned char>& GetRawBody() const;
+  const std::string &GetHTTPVersion() const;
+  int GetStatusCode() const;
+  const std::string &GetReasonPhrase() const;
+  const std::vector<HttpHeader> &GetHeaders() const;
+  const std::vector<unsigned char> &GetRawBody() const;
 
-	private:
+private:
 
-		std::string m_httpVersion;
-		int m_status;
-		std::string m_reason;
-		std::vector<HttpHeader> m_headers;
-		std::vector<unsigned char> m_body;
+  std::string m_httpVersion;
+  int m_status;
+  std::string m_reason;
+  std::vector<HttpHeader> m_headers;
+  std::vector<unsigned char> m_body;
 };
 
 #endif
