@@ -10,10 +10,6 @@
 #include <unistd.h>
 #include <vector>
 
-void printVector(const std::vector<unsigned char> &vec, ssize_t limit) {
-  std::cout << std::string(vec.begin(), vec.begin() + limit) << std::endl;
-}
-
 /* Connection:
  * A transport layer virtual circuit established between two
  * application programs for the purpose of communication.
@@ -29,6 +25,7 @@ bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
     return false;
   }
 
+  // TODO: make http version configurable
   HTTPRequest request(method, url, "HTTP/1.1", body, headers);
   std::vector<unsigned char> data = request.GetBytes();
 
@@ -44,12 +41,12 @@ bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
   }
 
   // read response
-  std::vector<unsigned char> readBuffer(367);
+  std::vector<unsigned char> readBuffer(1024);
   ssize_t totalRecvd = 0;
   bool readFurther = true;
   while (readFurther) {
-    ssize_t readIn =
-        recv(*m_socketSession.get(), readBuffer.data() + totalRecvd, 367, 0);
+    ssize_t readIn = recv(*m_socketSession.get(),
+                          readBuffer.data() + totalRecvd, readBuffer.size(), 0);
     if (readIn == 0) {
       readFurther = false;
     }
@@ -61,9 +58,9 @@ bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
     totalRecvd += readIn;
   }
 
-  // TODO: parse response
-  std::cout << "RESP " << totalRecvd << std::endl;
-  printVector(readBuffer, totalRecvd);
+  // truncate the bad boy
+  readBuffer.resize(totalRecvd);
+  std::unique_ptr<HttpResponse> resp = HttpResponse::FromRawResp(readBuffer);
 
   // TODO: based on response clear our tcp socket
   m_socketSession = nullptr;
