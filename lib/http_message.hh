@@ -1,11 +1,9 @@
 #ifndef HTTP_MESSAGE_HH
 #define HTTP_MESSAGE_HH
 
-#include <string>
 #include <optional>
+#include <string>
 #include <vector>
-
-const char CRLF[] = "\r\n";
 
 const char DELIMITTER = ' ';
 
@@ -22,8 +20,8 @@ class HttpHeader {
 public:
   HttpHeader(std::string key, std::string val);
   std::string GetRepr() const;
-  const std::string& GetKey() const;
-  const std::string& GetValue() const;
+  const std::string &GetKey() const;
+  const std::string &GetValue() const;
 
 private:
   std::string m_key;
@@ -59,7 +57,7 @@ public:
   const std::string &GetReasonPhrase() const;
   const std::vector<HttpHeader> &GetHeaders() const;
   const std::vector<unsigned char> &GetRawBody() const;
-  const HttpHeader* GetHeader(const std::string& key) const;
+  const HttpHeader* GetHeader(const std::string &key) const;
 
 private:
   std::string m_httpVersion;

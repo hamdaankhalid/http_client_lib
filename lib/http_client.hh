@@ -40,9 +40,10 @@ public:
 
   HTTPConnection(std::string host, int port, int blockSize);
 
-  bool Request(HTTP_METHOD method, const std::string &url,
-               const std::vector<unsigned char> &body,
-               const std::vector<HttpHeader> &headers);
+  std::unique_ptr<HttpResponse> Request(HTTP_METHOD method,
+                                        const std::string &url,
+                                        const std::vector<unsigned char> &body,
+                                        const std::vector<HttpHeader> &headers);
 
   // ---- End of Public Exported Method sections ----
 

@@ -1,11 +1,13 @@
 #include "http_message.hh"
 
 #include <__nullptr>
-#include <optional>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <regex>
 #include <vector>
+
+const char CRLF[] = "\r\n";
 
 const char *HTTP_METHOD_STR[] = {"GET", "POST", "PUT", "PUT", "DELETE"};
 
@@ -14,13 +16,9 @@ HttpHeader::HttpHeader(std::string key, std::string val)
 
 std::string HttpHeader::GetRepr() const { return m_key + ":" + m_value; }
 
-const std::string& HttpHeader::GetKey() const {
-	return m_key;
-}
+const std::string &HttpHeader::GetKey() const { return m_key; }
 
-const std::string& HttpHeader::GetValue() const {
-	return m_value;
-}
+const std::string &HttpHeader::GetValue() const { return m_value; }
 
 HTTPRequest::HTTPRequest(HTTP_METHOD method, std::string route,
                          std::string version, std::vector<unsigned char> body,
@@ -160,7 +158,7 @@ HttpResponse::FromRawResp(std::vector<unsigned char> &rawResp) {
     if (match.size() == 3) {
       std::string key = match[1].str();
       std::string value = match[2].str();
-	  headers.push_back(HttpHeader(key, value));
+      headers.push_back(HttpHeader(key, value));
     }
     searchStart = match.suffix().first;
   }
@@ -196,12 +194,12 @@ const std::vector<unsigned char> &HttpResponse::GetRawBody() const {
   return m_body;
 }
 
-const HttpHeader* HttpResponse::GetHeader(const std::string& key) const {
-	for (const HttpHeader& header : m_headers) {
-		if (header.GetKey() == key) {
-			return &header;
-		}
+// using const pointer because cannot use nullptr with const ref on return if nothing found
+const HttpHeader* HttpResponse::GetHeader(const std::string &key) const {
+  for (int i = 0; i < m_headers.size(); i++) {
+	if (m_headers[i].GetKey() == key) {
+	  return &m_headers[i];
 	}
-	return nullptr;
+  }
+  return nullptr;
 }
-

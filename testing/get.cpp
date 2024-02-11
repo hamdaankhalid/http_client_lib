@@ -1,3 +1,4 @@
+#include <__nullptr>
 #include <iostream>
 #include <string>
 
@@ -17,13 +18,16 @@ int main() {
 
     for (int i = 0; i < 5; i++) {
       // Make a GET request to the root path
-      bool success =
+	  std::unique_ptr<HttpResponse> resp =
           connection.Request(HTTP_METHOD::GET, "/tasks", {}, {keepAlive});
-      if (!success) {
+      if (resp == nullptr) {
         std::cout << "Failed to make request" << std::endl;
         break;
       }
+
       std::cout << "----Made Request " << i << " ------" << std::endl;
+	
+	  std::cout << resp->GetStatusCode() << std::endl;
     }
 
   } catch (const std::exception &e) {

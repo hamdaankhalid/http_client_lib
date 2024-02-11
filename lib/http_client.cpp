@@ -1,6 +1,7 @@
 #include "http_client.hh"
 #include "http_message.hh"
 
+#include <__nullptr>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -18,11 +19,12 @@ HTTPConnection::HTTPConnection(std::string host, int port, int blockSize)
     : host(host), port(port), blockSize(blockSize), m_socketSession(nullptr),
       m_resolvedAddr(nullptr) {}
 
-bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
-                             const std::vector<unsigned char> &body,
-                             const std::vector<HttpHeader> &headers) {
+std::unique_ptr<HttpResponse>
+HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
+                        const std::vector<unsigned char> &body,
+                        const std::vector<HttpHeader> &headers) {
   if (!this->establishOrReuseTcpSession()) {
-    return false;
+    return nullptr;
   }
 
   // TODO: make http version configurable
@@ -35,7 +37,7 @@ bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
                         data.size() - totalSent, 0);
     if (sent < 0) {
       std::cout << "Couldn't send!" << std::endl;
-      return false;
+      return nullptr;
     }
     totalSent += sent;
   }
@@ -53,19 +55,26 @@ bool HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
 
     if (readIn < 0) {
       std::cout << "Couldn't get response!" << std::endl;
-      return false;
+      return nullptr;
     }
     totalRecvd += readIn;
   }
 
-  // truncate the bad boy
+  // truncate this bad boy
   readBuffer.resize(totalRecvd);
   std::unique_ptr<HttpResponse> resp = HttpResponse::FromRawResp(readBuffer);
 
-  // TODO: based on response clear our tcp socket
+  // conditionally close tcp connection
+  const HttpHeader *connHeader = resp->GetHeader("Connection");
+
+  /*
+  if ((connHeader != nullptr && connHeader->GetValue() == "close")) {
+    m_socketSession = nullptr;
+  }
+  */
   m_socketSession = nullptr;
 
-  return true;
+  return resp;
 }
 
 bool HTTPConnection::establishOrReuseTcpSession() {
