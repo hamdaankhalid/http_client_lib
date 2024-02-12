@@ -40,6 +40,7 @@ public:
 
   HTTPConnection(std::string host, int port, int blockSize);
 
+  // simple request response API
   std::unique_ptr<HttpResponse> Request(HTTP_METHOD method,
                                         const std::string &url,
                                         const std::vector<unsigned char> &body,

@@ -18,7 +18,7 @@ int main() {
 
     for (int i = 0; i < 5; i++) {
       // Make a GET request to the root path
-	  std::unique_ptr<HttpResponse> resp =
+      std::unique_ptr<HttpResponse> resp =
           connection.Request(HTTP_METHOD::GET, "/tasks", {}, {keepAlive});
       if (resp == nullptr) {
         std::cout << "Failed to make request" << std::endl;
@@ -26,8 +26,8 @@ int main() {
       }
 
       std::cout << "----Made Request " << i << " ------" << std::endl;
-	
-	  std::cout << resp->GetStatusCode() << std::endl;
+
+      std::cout << resp->GetStatusCode() << std::endl;
     }
 
   } catch (const std::exception &e) {

@@ -1,7 +1,6 @@
 #include "http_client.hh"
 #include "http_message.hh"
 
-#include <__nullptr>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -66,13 +65,9 @@ HTTPConnection::Request(HTTP_METHOD method, const std::string &url,
 
   // conditionally close tcp connection
   const HttpHeader *connHeader = resp->GetHeader("Connection");
-
-  /*
-  if ((connHeader != nullptr && connHeader->GetValue() == "close")) {
+  if (connHeader != nullptr && connHeader->GetValue() == "close") {
     m_socketSession = nullptr;
   }
-  */
-  m_socketSession = nullptr;
 
   return resp;
 }

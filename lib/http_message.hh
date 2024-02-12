@@ -57,7 +57,7 @@ public:
   const std::string &GetReasonPhrase() const;
   const std::vector<HttpHeader> &GetHeaders() const;
   const std::vector<unsigned char> &GetRawBody() const;
-  const HttpHeader* GetHeader(const std::string &key) const;
+  const HttpHeader *GetHeader(const std::string &key) const;
 
 private:
   std::string m_httpVersion;

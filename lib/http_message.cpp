@@ -1,6 +1,5 @@
 #include "http_message.hh"
 
-#include <__nullptr>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -149,17 +148,14 @@ HttpResponse::FromRawResp(std::vector<unsigned char> &rawResp) {
   std::string rawHeaders = matchingResult[4];
   std::vector<HttpHeader> headers;
 
-  std::regex headerRegex("(.*?):\\s*(.*?)\\s*\r\n");
+  std::regex headerRegex("(.*?):\\s*(.*?)\\s*(\r\n|$)");
   std::smatch match;
-
   std::string::const_iterator searchStart(rawHeaders.cbegin());
   while (
       std::regex_search(searchStart, rawHeaders.cend(), match, headerRegex)) {
-    if (match.size() == 3) {
       std::string key = match[1].str();
       std::string value = match[2].str();
       headers.push_back(HttpHeader(key, value));
-    }
     searchStart = match.suffix().first;
   }
 
@@ -194,12 +190,13 @@ const std::vector<unsigned char> &HttpResponse::GetRawBody() const {
   return m_body;
 }
 
-// using const pointer because cannot use nullptr with const ref on return if nothing found
-const HttpHeader* HttpResponse::GetHeader(const std::string &key) const {
+// using const pointer because cannot use nullptr with const ref on return if
+// nothing found
+const HttpHeader *HttpResponse::GetHeader(const std::string &key) const {
   for (int i = 0; i < m_headers.size(); i++) {
-	if (m_headers[i].GetKey() == key) {
-	  return &m_headers[i];
-	}
+    if (m_headers[i].GetKey() == key) {
+      return &m_headers[i];
+    }
   }
   return nullptr;
 }
